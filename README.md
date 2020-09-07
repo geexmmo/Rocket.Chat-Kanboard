@@ -27,17 +27,17 @@ These instructions will get you a copy of the project up and running on your loc
 
 - Clone this repo first, there are some configuration to be done localy to this script.
 
-- Modify contents of *kanboard-integration-example.js* to fit you setup:
-- Use API key provided by kanboard in "Settings > API" menu. 
-- User jsonprc is the default API user, reffer to Kanboard API manuals for information on this and difference in access models
+- Modify contents of `kanboard-integration-example.js` to fit you setup:
+  Use API key provided by kanboard in "Settings > API" menu. 
+  User jsonprc is the default API user, reffer to Kanboard API manuals for information on this and difference in access models
   - `authcreds = "jsonrpc:183802e14c2601b77a44b413484110e5c1cb7227bfba3f6ca05d01d5c515";`
 
 - Kanboard Project_id is where new tasks from this integration will be created.
-- Use command "projects" from integration, it could help you find correct kanboard_project_id.
+  Use command "projects" from integration, it could help you find correct kanboard_project_id.
   - `kanboard_project_id = 6;`
 
 - Kanboard project's kanboard_column_id is the default column where new tasks will be created, I am using "In progress" column.
-- Use command "columns `project id here`" from integration, it will list all columns with their names and id for specified project. 
+  Use command "columns `project id here`" from integration, it will list all columns with their names and id for specified project. 
   - `kanboard_column_id = 28;`
 
 - kanboard_column_id_completed is the default column where completed task will be moved to (it will not close the tasks, just move it to "Completed" column). 
@@ -48,7 +48,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## 🏁 User mapping <a name = "user_map"></a>
 
-  In *kanboard-integration-example.js*, line 40.
+  In `kanboard-integration-example.js`, line 40.
   Map your Rocket.Chat users to appropriate users in Kanboard by copying/adding 'case' switches in code,
   in example script there are one active and one commented user.
   User *geexmmo* is a Rocket.Chat user that accessing integration, he is mapped to user *Arthur Geexmmo* with id 7 in Kanboard.
