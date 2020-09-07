@@ -100,7 +100,7 @@ class Script {
              "task_id": argument,
              "column_id": kanboard_column_id_completed,
              "position": 1,
-             "swimlane_id": 1}}
+             "swimlane_id": 0}}
      };
    }
    
@@ -185,7 +185,7 @@ class Script {
      text.push('Задача создана, id: '+response.content.result);
     break;
     // moveTaskPosition
-    case 1:
+    case 2:
      text.push('Задача перемещена, id: '+response.content.result);
     break;
 
