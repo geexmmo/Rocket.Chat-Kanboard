@@ -57,7 +57,7 @@ class Script {
    // createTask
    //
    // Match chat messages for keyword 'new' and send appropriate request to api
-   match = request.data.text.match(/^new/);
+   match = request.data.text.match(/^new\b/i);
    // removing first word from 'request.data.text' - what is left will be used as task title
    var str = request.data.text
    var argument = str.split(' ').slice(1).join(' ')
@@ -84,7 +84,7 @@ class Script {
    // moveTaskPosition (finished tasks)
    //
    // Match chat messages for keyword 'close' and send appropriate request to api
-   match = request.data.text.match(/^close/);
+   match = request.data.text.match(/^close\b/i);
    // removing first word from 'request.data.text' - what is left will be used as task title
    var str = request.data.text
    var argument = str.split(' ').slice(1).join(' ')
@@ -108,7 +108,7 @@ class Script {
    // getAllProjects
    //
    // Match chat messages for keyword 'projects' and send appropriate request to api
-   match = request.data.text.match(/^projects/);
+   match = request.data.text.match(/^projects\b/i);
    // json data structuring
    if (match) {
      return {
@@ -124,7 +124,7 @@ class Script {
    // getColumns
    //
    // Match chat messages for keyword 'columns' and send appropriate request to api
-   match = request.data.text.match(/^columns/);
+   match = request.data.text.match(/^columns\b/i);
    // removing first word from 'request.data.text' - what is left will be used as project_id in query
    var str = request.data.text
    var argument = str.split(' ').slice(1).join(' ')
@@ -138,6 +138,25 @@ class Script {
        data: {"jsonrpc": "2.0","method": "getColumns","id": 4,"params": [argument]}
     };
    }
+   //
+   // createComment
+   //
+   // Match chat messages for keyword 'comment' and send appropriate request to api
+   match = request.data.text.match(/^comment\b/i);
+   // removing first word from 'request.data.text' - what is left will be used as project_id in query
+   var str = request.data.text
+   var argument = str.split(' ').slice(1,2).join(' ')
+   var argument2 = str.split(' ').slice(2).join(' ')
+   // json data structuring
+   if (match) {
+     return {
+       method: 'POST',
+       url: request.url,
+       headers: request.headers,
+       auth: authcreds,
+       data: {"jsonrpc": "2.0","method": "createComment","id": 5,"params": {"task_id": argument,"user_id": kanboard_user_id,"content": argument2}}
+    };
+   }
 
    // Prevent the request and return a new message with options
    match = request.data.text.match(/^help$/);
@@ -147,7 +166,11 @@ class Script {
          text: [
            '**commands**',
            '```',
-             '  new "text" Creates new task from user mapped to your Rocket.Chat username',
+             '  \'new "text"\' Creates new task from user mapped to your Rocket.Chat username (new get things done)',
+             '  \'close "taskID"\' moves task to "Completed" column. (close 912)',
+             '  \'comment "taskID" "text"\' adds comment to specified task. (comment 912 all done here)',
+             '  helper: \'projects\' - lists all available project with their names and id',
+             '  helper: \'columns "project_id"\' - lists all column names and id for specified project',
            '```'
          ].join('\n')
        }
@@ -177,29 +200,35 @@ class Script {
    // var text = response.content_raw;
    
    // Mapping response from repsonse id
+   // There is a huge bug in there, 
+   // if first word of response contains one of the keywords from match section above - 
+   // Rocket.Chat will execute integration and loop will occur. 
    response_jsonid = response.content.id;
    var text = [];
    switch (response_jsonid) {
     // createTask
     case 1:
-     text.push('Задача создана, id: '+response.content.result);
+      text.push('Task created, id: '+response.content.result);
     break;
     // moveTaskPosition
     case 2:
-     text.push('Задача перемещена, id: '+response.content.result);
+      text.push('Task moved, id: '+response.content.result);
     break;
-
     // getAllProjects
     case 3:
-     response.content.result.forEach(function(obj) {
-       text.push('project_id: "'+obj.id+'" #'+obj.name+' owner_id: "'+obj.owner_id+'"');
-     });
+      response.content.result.forEach(function(obj) {
+        text.push('project_id: "'+obj.id+'" #'+obj.name+' owner_id: "'+obj.owner_id+'"');
+      });
     break;
     // getColumns
     case 4:
-     response.content.result.forEach(function(obj) {
-       text.push('column_id: "'+obj.id+'" #'+obj.title);
-     });
+      response.content.result.forEach(function(obj) {
+        text.push('column_id: "'+obj.id+'" #'+obj.title);
+      });
+    break;
+    // createComment
+    case 5:
+      text.push('Commented with id:'+response.content.result);
     break;
     // if nothing mathed - there is an error probably, whole json will be displayed
     default:
