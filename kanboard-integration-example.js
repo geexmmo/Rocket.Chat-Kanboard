@@ -44,9 +44,9 @@ class Script {
      case 'geexmmo':
       kanboard_user_id = 7;
     break;
-   //  case 'goga':
-   //    kanboard_user_id = 5;
-   //  break;
+    case 'goga':
+      kanboard_user_id = 5;
+    break;
     default:
      kanboard_user_id = default_user;
    }
@@ -56,8 +56,8 @@ class Script {
    //
    // createTask
    //
-   // Match chat messages for keyword 'new' and send appropriate request to api
-   match = request.data.text.match(/^new\b/i);
+   // Match chat messages for keyword 'new', 'task', 'create' and send appropriate request to api
+   match = request.data.text.match(/^new|^task|^create\b/i);
    // removing first word from 'request.data.text' - what is left will be used as task title
    var str = request.data.text
    var argument = str.split(' ').slice(1).join(' ')
@@ -208,11 +208,13 @@ class Script {
    switch (response_jsonid) {
     // createTask
     case 1:
-      text.push('Task created, id: '+response.content.result);
+      // You should probably add asterisks or other cool text decorators to text.push outputs to deal with loop situations
+      // bot will read messages that were outputed by itself and positively run request.data.text.match on those messages.
+      text.push('* Task created, id: '+response.content.result);
     break;
     // moveTaskPosition
     case 2:
-      text.push('Task moved, id: '+response.content.result);
+      text.push('* Task moved, id: '+response.content.result);
     break;
     // getAllProjects
     case 3:
@@ -228,7 +230,7 @@ class Script {
     break;
     // createComment
     case 5:
-      text.push('Commented with id:'+response.content.result);
+      text.push('* Commented with id:'+response.content.result);
     break;
     // if nothing mathed - there is an error probably, whole json will be displayed
     default:
